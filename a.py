@@ -36,6 +36,10 @@ def stats(bot, update):
     eta = ftime-now
     bot.send_message('The room temperature is {}ºC.\n'.format(roomtemp(ard))+eta_stats)
 
+@app.route('/')
+def initiate():
+    return redirect(url_for('setup'))
+
 @app.route('/setup/', methods=["GET", "POST"])
 def setup():
     if request.method == 'POST':
