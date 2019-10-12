@@ -1,0 +1,3 @@
+Endesa;0.0585
+Gas Natural;0.0559
+Public;0.0600
