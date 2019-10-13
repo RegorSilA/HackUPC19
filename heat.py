@@ -2,7 +2,7 @@ import numpy as np
 import time
 import datetime as dt
 
-def TTiming(Temp):
+def TTiming(Temp,TempAmb=20):
     start_time = time.time()
     ####DADES
     #[En metres]
@@ -15,7 +15,7 @@ def TTiming(Temp):
     
     SizeRoom=np.array([LX,LY])
     
-    TAmb=20
+    TAmb=TempAmb
     TRad=70
     Funci=0
     TObj=Temp

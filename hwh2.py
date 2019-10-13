@@ -41,10 +41,11 @@ def stats(bot, update):
     try:
         msg = update.message
         now = datetime.datetime.now()
+        ftime=datetime.datetime.now()+datetime.timedelta(minutes=20)
         try:
             if now < ftime:
                 est = ftime-now
-                msg.reply_text('The room temperature is {}ºC.\nRemaining time: {:02d}:{:02d}h'.format(roomtemp(ard), est.seconds//3600, (est.seconds//60)%60))
+                msg.reply_text('The room temperature is {}ºC.\nRemaining time: {}:{}h'.format(roomtemp(ard), est.seconds//3600, (est.seconds//60)%60))
             else:
                 msg.reply_text('The room temperature is {}ºC.\nThe room is already heated.'.format(roomtemp(ard)))
         except:
@@ -114,25 +115,21 @@ def main(temp, ftime_var, mode, roomtemp):
             heattime = heat.TTiming(float(temp))
             ftime = datetime.datetime.now()+heattime
             string2 = "The room will be heated by {}".format(datetime.datetime.strftime(ftime, "%H:%M"))
-            if request.method=='POST' and request.form['action'] == 'Economic options':
-                return redirect(url_for('paraules', temp=temp))
+            
         elif mode=='schedule':
             heattime = heat.TTiming(float(temp))
             itime = datetime.datetime.strptime(ftime, "%H:%M")-heattime
             string2 = "The room will start to be heated at {}. \n It will be finished by {}.".format(datetime.datetime.strftime(itime, "%H:%M"),
                 datetime.datetime.strftime(itime+heattime, "%H:%M"))
-            if request.method=='POST' and request.form['action'] == 'Economic options':
-                return redirect(url_for('paraules', temp=temp))
+
     return render_template('main.html', value1=string1, value2=string2)
+
+#redirect(url_for('econ_intro', temp=temp))
 
 @app.route('/econ_intro<string:temp>', methods=["GET", "POST"])
 def paraules(temp):
-    if request.method=='POST' and request.form['action']=='Back':
-        try:
-            return redirect(url_for('main', temp=temp, ftime_var=ftime, mode='schedule',roomtemp=roomtemp(ard)))
-        except:
-            return redirect(url_for('main', temp=temp, ftime_var=ftime, mode='schedule',roomtemp=False))       
-    return render_template('econ_intro.html')
+    return "Hola"
+
 
 if __name__ == '__main__':
     # ARDUINO
