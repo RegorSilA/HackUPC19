@@ -18,7 +18,7 @@ def TTiming(Temp):
     TAmb=20
     TRad=70
     Funci=0
-    TObj=26
+    TObj=Temp
     Error=0.5
     
     #Radiator-Room Size
@@ -112,5 +112,3 @@ def TTiming(Temp):
         RoomM=RoomMN
     
     return dt.timedelta(seconds=cont*PasSecs)
-
-print(TTiming(27))
