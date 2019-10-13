@@ -5,10 +5,15 @@ import serial
 import telegram 
 from telegram.ext import Updater, MessageHandler, CommandHandler, InlineQueryHandler, Filters
 import traceback
+import heat
 
 app = Flask(__name__, template_folder='./')
 TOKEN = '969063074:AAH16iWup3H8bQvWxmwPBMgJeKmoPnkCcgA'
+global ftime
+global heatstat
+global heattime
 heatstat = -1
+ftime=0
 
 def roomtemp(ard):
     while ard.inWaiting()==0:
@@ -55,17 +60,17 @@ def setup():
     if request.method == 'POST':
         temp = request.form['temp']
         return redirect(url_for('mode', temp=temp))
-    heatstat = 0
     return render_template('setup.html')
 
 @app.route('/mode<string:temp>', methods=["GET", "POST"])
 def mode(temp):
     if request.method == 'POST':
         if request.form['action'] == 'Turn on now':
+            heatstat = 1
             try:
-                return redirect(url_for('main', temp=temp, ftime='0', mode='now', roomtemp=roomtemp(ard)))
+                return redirect(url_for('main', temp=temp, mode='now', roomtemp=roomtemp(ard)))
             except:
-                return redirect(url_for('main', temp=temp, ftime='0', mode='now', roomtemp=False))
+                return redirect(url_for('main', temp=temp, mode='now', roomtemp=False))
         elif request.form['action'] == 'Schedule':
             return redirect(url_for('setup_schedule', temp=temp))
     else:
@@ -75,25 +80,34 @@ def mode(temp):
 def setup_schedule(temp):
     if request.method == 'POST':
         ftime = request.form['time']
-        strtime = time.strptime(ftime, "%H:%M:%S")
+        strtime = time.strptime(ftime, "%H:%M")
         heatstat = 0
         try:
-            return redirect(url_for('main', temp=temp, ftime=ftime, mode='schedule',roomtemp=roomtemp(ard)))
+            return redirect(url_for('main', temp=temp, ftime_var=ftime, mode='schedule',roomtemp=roomtemp(ard)))
         except:
-            return redirect(url_for('main', temp=temp, ftime=ftime, mode='schedule',roomtemp=False))            
+            return redirect(url_for('main', temp=temp, ftime_var=ftime, mode='schedule',roomtemp=False))            
     return render_template('setup_schedule.html')
 
-@app.route('/main<string:temp>%<string:mode>%<string:ftime>%<string:roomtemp>', methods=["GET", "POST"])
-def main(temp, ftime, mode, roomtemp):
+@app.route('/main<string:temp>%<string:mode>%<string:ftime_var>%<string:roomtemp>', methods=["GET", "POST"])
+def main(temp, ftime_var, mode, roomtemp):
+    global heattime
+    global ftime
+    global heatstat
+    ftime = ftime_var
     if mode=='now':
-        pass
+        # que et digui quant trigarà
+        heattime = heat.TTiming(temp)
+        ftime = datetime.datetime.now()+heattime
+        return "The room will be heated by {}".format(datetime.datetime.strftime(ftime, "%H:%M"))
     elif mode=='schedule':
-        pass
+        heattime = heat.TTiming(temp)
+        itime = datetime.datetime.strptime(ftime, "%H:%M")-heattime
+        return "The room will start to be heated at {}".format(datetime.datetime.strftime(itime, "%H:%M"))
     if roomtemp!='False':
         string1 = "Room temperature: {}ºC\n".format(roomtemp)
     else:
         string1 = ""
-    if heatstat == 0:
+    if heatstat == 1:
         string2 = "The room is being heated."
     else:
         string2 = "The room is already heated."

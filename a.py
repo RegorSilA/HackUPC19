@@ -4,41 +4,12 @@ import datetime
 import serial
 import telegram 
 from telegram.ext import Updater, MessageHandler, CommandHandler, InlineQueryHandler, Filters
+from botfunc import *
 
 app = Flask(__name__, template_folder='./')
 TOKEN = '969063074:AAH16iWup3H8bQvWxmwPBMgJeKmoPnkCcgA'
 
-def error(func):
-    print("Error in", func)
-    traceback.print_exc()
 
-def start(bot, update):
-    msg = update.message
-    try:
-        msg.reply_text('Hello!')
-    except:
-        boterror('start')
-
-def get_help(bot, update):
-    pass
-
-def stats(bot, update):
-    msg = update.message
-    now = datetime.datetime.now()
-    try:
-        if now.time() > ftime.time():
-            eta = (ftime-now)
-            eta_stats = 'Remaining time: {}h.'.format(eta)
-        else:
-            eta_stats = 'The room is already heated.'
-    except:
-        eta_stats = 'The room is already heated.'
-    eta = ftime-now
-    bot.send_message('The room temperature is {}ºC.\n'.format(roomtemp(ard))+eta_stats)
-
-@app.route('/')
-def initiate():
-    return redirect(url_for('setup'))
 
 @app.route('/setup/', methods=["GET", "POST"])
 def setup():
